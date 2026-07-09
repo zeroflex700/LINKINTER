@@ -168,19 +168,11 @@ function buildEmailHtml(fields) {
                     <div class="join-us" style="text-align: center;padding: 20px 0 8px;line-height: 16px;margin: 0;color:#9B9B9B;">
                         Join Our Community
                     </div>
-                    <div class="join-us-community" style="font-size:0;margin: 0 auto 24px;text-align: center;">
-                        <a href="https://x.com/" style="width: 29px;height: 26px;margin: 0 13.5px;display: inline-block;">
-                            <img width="29" height="26" src="https://i.imgur.com/iGsQShI.jpeg" alt="X">
-                        </a>
-                        <a href="https://t.me/s/interlinkID" style="width: 29px;height: 29px;margin: 0 13.5px;display: inline-block;">
-                            <img width="29" height="29" src="https://i.imgur.com/dosFlpw.jpeg" alt="Telegram">
-                        </a>
-                        <a href="https://www.facebook.com/official.interlinklabs" style="width: 29px;height: 29px;margin: 0 13.5px;display: inline-block;">
-                            <img width="29" height="29" src="https://i.imgur.com/oCScxYz.jpeg" alt="Facebook">
-                        </a>
-                        <a href="https://discord.com/" style="width: 29px;height: 29px;margin: 0 13.5px;display: inline-block;">
-                            <img width="29" height="29" src="https://i.imgur.com/k2QAZDy.jpeg" alt="Discord">
-                        </a>
+                    <div class="join-us-community" style="margin: 0 auto 24px;text-align: center;">
+                        <a href="https://x.com/" style="display:inline-block;margin:0 10px;font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#6F69F1;text-decoration:none;">X</a>
+                        <a href="https://t.me/s/interlinkID" style="display:inline-block;margin:0 10px;font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#6F69F1;text-decoration:none;">Telegram</a>
+                        <a href="https://www.facebook.com/official.interlinklabs" style="display:inline-block;margin:0 10px;font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#6F69F1;text-decoration:none;">Facebook</a>
+                        <a href="https://discord.com/" style="display:inline-block;margin:0 10px;font-family:Helvetica,Arial,sans-serif;font-size:13px;font-weight:600;color:#6F69F1;text-decoration:none;">Discord</a>
                     </div>
                     <div style="text-align: center;margin: 24px 0 0;line-height: 16px;color:#9B9B9B;">
                         © 2026 Interlink Network. All rights reserved.
@@ -242,4 +234,4 @@ export default async function handler(req, res) {
     // passed straight through so the form can show something meaningful.
     return res.status(500).json({ error: err.message });
   }
-      }
+}
