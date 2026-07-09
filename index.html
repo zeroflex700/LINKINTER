@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interlink — Send Trade Confirmation Email</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', Helvetica, sans-serif;
+      background: #F4F3FC;
+      color: #1A1A1A;
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .logo span {
+      font-weight: 400;
+      color: #6F69F1;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #E4E1FB;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 30px rgba(75, 63, 217, 0.08);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #6B6B6B;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .row .field {
+      flex: 1;
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: #6B6B6B;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid #E4E1FB;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1A1A1A;
+      background: #FBFAFF;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #6F69F1;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 24px;
+      background: #6F69F1;
+      background-image: linear-gradient(180deg, #6F69F1 0%, #837DFF 100%);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .status.visible { display: block; }
+
+    .status.success {
+      background: #ECFBF6;
+      border: 1px solid #B7EDDB;
+      color: #0E7A56;
+    }
+
+    .status.error {
+      background: #FFF3F3;
+      border: 1px solid #FFCFCF;
+      color: #B3261E;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #9B9B9B;
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">Interlink<span>Network</span></div>
+
+    <div class="card">
+      <h1>Send a trade confirmation email</h1>
+      <p class="subtitle">Fill in the trade details below and this will be emailed to the seller using the Interlink confirmation template.</p>
+
+      <form id="send-form">
+        <div class="field">
+          <label for="transactionId">Transaction ID</label>
+          <input type="text" id="transactionId" placeholder="e.g. TRD-4821" required>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="sellerName">Seller name</label>
+            <input type="text" id="sellerName" placeholder="e.g. Guest-6EBB">
+          </div>
+          <div class="field">
+            <label for="buyerName">Buyer name</label>
+            <input type="text" id="buyerName" placeholder="e.g. Buyer-3F1A">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="amount">Amount *</label>
+            <input type="number" id="amount" placeholder="e.g. 500" min="0" step="0.01" required>
+          </div>
+          <div class="field">
+            <label for="currency">Currency</label>
+            <select id="currency">
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="NGN">NGN</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="paymentMethod">Payment method</label>
+          <input type="text" id="paymentMethod" placeholder="e.g. Bank Transfer, Crypto, Zelle...">
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="asset">Crypto asset</label>
+            <input type="text" id="asset" placeholder="e.g. BTC">
+          </div>
+          <div class="field">
+            <label for="quantity">Quantity</label>
+            <input type="text" id="quantity" placeholder="e.g. 0.01">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="verifyLink">Verification link</label>
+          <input type="url" id="verifyLink" placeholder="https://yourapp.com/index.html#/verify?...">
+        </div>
+
+        <div class="field">
+          <label for="recipientEmail">Recipient email *</label>
+          <input type="email" id="recipientEmail" placeholder="seller@example.com" required>
+        </div>
+
+        <button type="submit" id="submit-btn">Send confirmation email</button>
+      </form>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <p class="note">
+      Emails are sent from your connected Gmail account via SMTP.
+      Standard Gmail accounts can send up to ~500 emails per day.
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById('send-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const statusEl = document.getElementById('status');
+
+    function showStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = `status visible ${type}`;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+      statusEl.className = 'status';
+
+      const payload = {
+        transactionId: document.getElementById('transactionId').value.trim(),
+        sellerName: document.getElementById('sellerName').value.trim(),
+        buyerName: document.getElementById('buyerName').value.trim(),
+        amount: document.getElementById('amount').value.trim(),
+        currency: document.getElementById('currency').value,
+        paymentMethod: document.getElementById('paymentMethod').value.trim(),
+        asset: document.getElementById('asset').value.trim(),
+        quantity: document.getElementById('quantity').value.trim(),
+        verifyLink: document.getElementById('verifyLink').value.trim(),
+        recipientEmail: document.getElementById('recipientEmail').value.trim(),
+      };
+
+      try {
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showStatus(`Failed to send: ${data.error || 'Unknown error'}`, 'error');
+        } else {
+          showStatus('Email sent successfully.', 'success');
+          form.reset();
+        }
+      } catch (err) {
+        showStatus(`Network error: ${err.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send confirmation email';
+      }
+    });
+  </script>
+</body>
+</html>
