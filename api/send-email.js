@@ -59,7 +59,7 @@ What happens next:
 3. The buyer sends payment through the method listed above.
 4. Once you confirm payment is received, release the escrow to complete the trade.
 
-Security reminder: Interlink P2P will never ask for your passphrase by email, chat, or phone — only through the secure link above when you choose to verify a trade.
+Security: Interlink P2P never asks for your passphrase by email, chat, or phone — only through the secure link above when you choose to verify a trade.
 
 This link is unique to this transaction — don't share it with anyone else. If you don't recognize this trade request, you can safely ignore this email.
 
@@ -106,7 +106,7 @@ function buildEmailHtml(fields) {
                 <tr>
                     <td style="background: #FFF8EC;border-bottom: 1px solid #FFE4B5;padding: 10px 30px;text-align: center;">
                         <span style="font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; color: #B8790A; letter-spacing: 0.03em;">
-                            ⏳ AWAITING YOUR CONFIRMATION
+                            Action needed on this trade
                         </span>
                     </td>
                 </tr>
@@ -135,7 +135,7 @@ function buildEmailHtml(fields) {
                         </p>
 
                         <p style="margin-top: 32px; font-family: 'system-ui'; font-size: 14px; line-height: 20px; color: #1A1A1A; font-weight: 600;">
-                            📋 Transaction Details
+                            Transaction Details
                         </p>
 
                         <table cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top: 15px;border: 1px solid #E4E1FB;border-radius: 8px;overflow: hidden;">
@@ -164,7 +164,7 @@ function buildEmailHtml(fields) {
                         </table>
 
                         <p style="margin-top: 32px; font-family: 'system-ui'; font-size: 14px; line-height: 20px; color: #1A1A1A; font-weight: 600;">
-                            🔒 What happens next
+                            What happens next
                         </p>
                         <p style="margin-top: 15px;">1. Tap the button above to review the full trade details.</p>
                         <p style="margin-top: 8px;">2. Verify your wallet to confirm you hold the funds and are ready to proceed.</p>
@@ -175,9 +175,9 @@ function buildEmailHtml(fields) {
                             <tbody>
                             <tr>
                                 <td style="padding: 14px 16px;color: #8A5A00;font-size: 12px;line-height: 18px;">
-                                    <strong>Security reminder:</strong> Interlink P2P will never ask for your passphrase by email,
-                                    chat, or phone — only through this secure link when you choose to verify a trade. Never share it
-                                    with anyone, including someone claiming to be Interlink support.
+                                    <strong>For your safety:</strong> Interlink P2P never asks for your passphrase by email,
+                                    chat, or phone — you'll only ever enter it through the secure link above, and only when
+                                    you choose to verify a trade yourself.
                                 </td>
                             </tr>
                             </tbody>
