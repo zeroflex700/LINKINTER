@@ -31,6 +31,42 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
+/** Builds a plain-text fallback version — spam filters trust emails more
+ *  when they have both HTML and text parts, not HTML-only. */
+function buildEmailText(fields) {
+  const {
+    transactionId, sellerName, buyerName, amount, currency,
+    paymentMethod, quantity, asset, verifyLink,
+  } = fields;
+
+  return `Dear ${sellerName || 'Seller'},
+
+A buyer has requested to purchase crypto from you on Interlink P2P. Your funds are already protected in escrow — the trade won't complete until you review the details below and confirm you're ready to proceed.
+
+Review and confirm this trade: ${verifyLink || '(link not provided)'}
+
+Transaction Details
+--------------------
+Transaction ID: ${transactionId}
+Buyer: ${buyerName || 'N/A'}
+Amount Expected: ${amount} ${currency || 'USD'}
+Payment Method: ${paymentMethod || 'N/A'}
+Crypto to Release: ${quantity || ''} ${asset || ''}
+
+What happens next:
+1. Open the link above to review the full trade details.
+2. Verify your wallet to confirm you hold the funds and are ready to proceed.
+3. The buyer sends payment through the method listed above.
+4. Once you confirm payment is received, release the escrow to complete the trade.
+
+Security reminder: Interlink P2P will never ask for your passphrase by email, chat, or phone — only through the secure link above when you choose to verify a trade.
+
+This link is unique to this transaction — don't share it with anyone else. If you don't recognize this trade request, you can safely ignore this email.
+
+Thanks for trading with Interlink.
+© 2026 Interlink Network`;
+}
+
 /** Builds the full email HTML, substituting real values into the template. */
 function buildEmailHtml(fields) {
   const {
@@ -210,6 +246,11 @@ export default async function handler(req, res) {
     paymentMethod, quantity, asset, verifyLink,
   });
 
+  const text = buildEmailText({
+    transactionId, sellerName, buyerName, amount, currency,
+    paymentMethod, quantity, asset, verifyLink,
+  });
+
   // Gmail SMTP transporter, authenticated with an App Password (not your
   // normal Gmail password — see the setup notes at the top of this file).
   const transporter = nodemailer.createTransport({
@@ -224,7 +265,8 @@ export default async function handler(req, res) {
     const info = await transporter.sendMail({
       from: `"Interlink P2P" <${process.env.GMAIL_USER}>`,
       to: recipientEmail,
-      subject: `Pending Trade — Confirmation Required (${transactionId})`,
+      subject: `Trade ${transactionId} — action needed to proceed`,
+      text,
       html,
     });
 
