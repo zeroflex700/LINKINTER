@@ -13,9 +13,9 @@
 
    GETTING A GMAIL APP PASSWORD:
    1. Turn on 2-Step Verification on the Google account you want to send
-      from (Google Account → Security → 2-Step Verification).
-   2. Google Account → Security → App Passwords → create one (name it
-      anything, e.g. "Interlink Sender") → copy the 16-character password.
+      from (Google Account -> Security -> 2-Step Verification).
+   2. Google Account -> Security -> App Passwords -> create one (name it
+      anything, e.g. "Interlink Sender") -> copy the 16-character password.
    3. That's GMAIL_APP_PASSWORD. GMAIL_USER is just the full Gmail address.
    ========================================================================== */
 
@@ -31,7 +31,7 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
-/** Builds a plain-text fallback version — spam filters trust emails more
+/** Builds a plain-text fallback version - spam filters trust emails more
  *  when they have both HTML and text parts, not HTML-only. */
 function buildEmailText(fields) {
   const {
@@ -236,7 +236,6 @@ export default async function handler(req, res) {
     paymentMethod, quantity, asset, verifyLink, recipientEmail,
   } = req.body || {};
 
-  // Minimum required fields to send a coherent email at all.
   if (!recipientEmail || !amount || !transactionId) {
     return res.status(400).json({ error: 'Missing required fields: recipientEmail, amount, and transactionId are required.' });
   }
@@ -251,33 +250,29 @@ export default async function handler(req, res) {
     paymentMethod, quantity, asset, verifyLink,
   });
 
+  // Gmail SMTP transporter, authenticated with an App Password (not your
+  // normal Gmail password - see the setup notes at the top of this file).
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+
   try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: process.env.SENDER_EMAIL,
-        to: [recipientEmail],
-        subject: `Trade ${transactionId} — action needed to proceed`,
-        text,
-        html,
-      }),
+    const info = await transporter.sendMail({
+      from: `"Interlink P2P" <${process.env.GMAIL_USER}>`,
+      to: recipientEmail,
+      subject: `Trade ${transactionId} — action needed to proceed`,
+      text,
+      html,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      // Resend's error message (e.g. domain not verified, invalid
-      // recipient, etc.) gets passed straight through so the form can
-      // show something meaningful instead of a generic failure.
-      return res.status(response.status).json({ error: data.message || JSON.stringify(data) });
-    }
-
-    return res.status(200).json({ success: true, id: data.id });
+    return res.status(200).json({ success: true, id: info.messageId });
   } catch (err) {
+    // Nodemailer's error messages (bad auth, invalid recipient, etc.) get
+    // passed straight through so the form can show something meaningful.
     return res.status(500).json({ error: err.message });
   }
 }
