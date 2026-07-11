@@ -3,5 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Small form + serverless function for sending Interlink P2P trade confirmation emails via Resend."
+  "description": "Small form + serverless function for sending Interlink P2P trade confirmation emails via Gmail (Nodemailer).",
+  "dependencies": {
+    "nodemailer": "^6.9.0"
+  }
 }
