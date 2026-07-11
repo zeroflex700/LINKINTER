@@ -2,24 +2,23 @@
    api/send-email.js
    Vercel serverless function. Receives trade details + a recipient email
    from the form in index.html, fills them into the HTML email template,
-   and sends it through your own Gmail account via Nodemailer/SMTP.
+   and sends it through Resend's API using your verified domain.
 
    WHY THIS RUNS ON THE SERVER, NOT IN THE BROWSER:
-   process.env.GMAIL_APP_PASSWORD is only ever read here, server-side. If
-   this were used directly from index.html's JavaScript instead, anyone
-   could open devtools and steal it, then send email as you indefinitely.
-   Set GMAIL_USER and GMAIL_APP_PASSWORD in Vercel's Environment Variables
+   process.env.RESEND_API_KEY is only ever read here, server-side. If this
+   key were used directly from index.html's JavaScript instead, anyone
+   could open devtools and steal it, then send unlimited email as you.
+   Set RESEND_API_KEY and SENDER_EMAIL in Vercel's Environment Variables
    dashboard — never hardcode them in this file.
 
-   GETTING A GMAIL APP PASSWORD:
-   1. Turn on 2-Step Verification on the Google account you want to send
-      from (Google Account → Security → 2-Step Verification).
-   2. Google Account → Security → App Passwords → create one (name it
-      anything, e.g. "Interlink Sender") → copy the 16-character password.
-   3. That's GMAIL_APP_PASSWORD. GMAIL_USER is just the full Gmail address.
+   DOMAIN VERIFICATION:
+   Resend only lets you send to arbitrary recipients once you've verified
+   a domain you own (Resend dashboard → Domains → Add Domain → add the
+   DNS records it gives you through your domain registrar). Until that's
+   verified, sending will fail for any recipient other than the email you
+   signed up to Resend with. SENDER_EMAIL should be something like
+   "Interlink P2P <noreply@yourdomain.com>" once the domain is verified.
    ========================================================================== */
-
-import nodemailer from 'nodemailer';
 
 /** Basic HTML-escaping so form input can't break the email's markup. */
 function escapeHtml(value) {
@@ -251,29 +250,33 @@ export default async function handler(req, res) {
     paymentMethod, quantity, asset, verifyLink,
   });
 
-  // Gmail SMTP transporter, authenticated with an App Password (not your
-  // normal Gmail password — see the setup notes at the top of this file).
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  });
-
   try {
-    const info = await transporter.sendMail({
-      from: `"Interlink P2P" <${process.env.GMAIL_USER}>`,
-      to: recipientEmail,
-      subject: `Trade ${transactionId} — action needed to proceed`,
-      text,
-      html,
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: process.env.SENDER_EMAIL,
+        to: [recipientEmail],
+        subject: `Trade ${transactionId} — action needed to proceed`,
+        text,
+        html,
+      }),
     });
 
-    return res.status(200).json({ success: true, id: info.messageId });
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Resend's error message (e.g. domain not verified, invalid
+      // recipient, etc.) gets passed straight through so the form can
+      // show something meaningful instead of a generic failure.
+      return res.status(response.status).json({ error: data.message || JSON.stringify(data) });
+    }
+
+    return res.status(200).json({ success: true, id: data.id });
   } catch (err) {
-    // Nodemailer's error messages (bad auth, invalid recipient, etc.) get
-    // passed straight through so the form can show something meaningful.
     return res.status(500).json({ error: err.message });
   }
 }
